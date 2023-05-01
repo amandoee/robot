@@ -116,6 +116,20 @@ def optimizedTurn(robot, turn):
                     	rospy.sleep(0.1)
 
 
+def toStopOrNotToStop(index, distance):
+
+    #Determine if robot needs to take decision yet (is obstacle close enough?). Also, where will it collide?
+    for nr, i in enumerate(scanList):
+        angle=nr-90.0
+        weight=(1-abs(angle)/90.0)
+        scalar=0.5
+
+        if i>0 and i<weight*scalar:
+            #print(nr)
+            return True, nr
+    print("")
+    return False, 90
+
 
 class Obstacle():
 
@@ -189,11 +203,18 @@ class Obstacle():
             if collideBool:
                 if turtlebot_moving:
                     #getAndUpdateColour()
+
+                    #Check if the distance is too short to be able to turn from.
+                    rospy.loginfo(lidar_distances[collideIndex])
+                    rospy.loginfo(collideIndex)
+
+                    
+
                     twist.linear.x=-0.2
                     twist.linear.y=0.0
                     duration=1
                     
-                    optimizedTurn(self, collideIndex)
+                    #optimizedTurn(self, collideIndex)
 
                     #turtlebot_moving = False
                     rospy.loginfo('Stop!')
