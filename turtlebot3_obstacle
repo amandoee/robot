@@ -109,7 +109,6 @@ def collideCheckV2(scanList):
         weight=(1-abs(angle)/90.0)
         scalar=0.5
 
-
         if (i>0 and i<weight*scalar) or (90-abs(angle)<45 and 90-abs(angle)>30 and i<0.25 and math.cos(90-abs(angle))*i<=ROBOT_WIDTH/2):
             danger_list.append(i)
         else:
@@ -118,7 +117,6 @@ def collideCheckV2(scanList):
     #Check if there is any danger value in array. If so, return index of the lowest distance.
 
     if any(i > 0 for i in danger_list):
-
         return True, danger_list.index(min(i for i in danger_list if i > 0)), danger_list
     ##CODE HERE
     else:
@@ -136,7 +134,7 @@ def optimizedTurn(robot, turn, danger_list):
     #Read from which side the obstacle is. Implemented later
     global direction_coefficient
 
-    direction_scanscalar= 1 if direction_coefficient==1 else 1.5
+    direction_scanscalar= 1 if direction_coefficient==1 else 1.2
 
     duration=1
     twist = Twist()
@@ -152,14 +150,14 @@ def optimizedTurn(robot, turn, danger_list):
 
     #Evaluate if there needs to be a sharper turn:
 
-    if danger_list[turn]<0.13*direction_scanscalar:
+    if danger_list[turn]<0.13*direction_scanscalar and turn<150 and turn>30:
             twist.linear.x=0
             direction_coefficient*=-1
             #twist.angular.z*=0.2*(2.2*(1-(danger_list[turn]/0.3)))
             twist.linear.x=direction_coefficient*0.2
             twist.angular.z=0
             robot._cmd_pub.publish(twist)
-            #rospy.sleep(0.25) #Test i virkelighed til at udnersøge hvor længe den er om at køre væk.
+            rospy.sleep(0.2) #Test i virkelighed til at udnersøge hvor længe den er om at køre væk.
 
 
 
