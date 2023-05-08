@@ -91,7 +91,7 @@ def collideCheckV2(scanList):
             res.append(i)
 
     rospy.loginfo(res)
-    if any(i > 0 for i in danger_list) and len(res)>3:
+    if any(i > 0 for i in danger_list) and len(res)>4:
         return True, danger_list.index(min(i for i in danger_list if i > 0)), danger_list
     ##CODE HERE
     else:
