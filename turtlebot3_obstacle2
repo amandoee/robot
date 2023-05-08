@@ -98,7 +98,7 @@ def optimizedTurn(robot, turn, danger_list):
     #Read from which side the obstacle is. Implemented later
     global direction_coefficient
 
-    direction_scanscalar= 0 if direction_coefficient==1 else 0.05
+    direction_scanscalar= 0 if direction_coefficient==1 else 0.02
 
     duration=1
     twist = Twist()
