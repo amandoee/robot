@@ -135,6 +135,8 @@ def optimizedTurn(robot, turn, danger_list):
 
 
 
+
+
 class Obstacle():
 
     def __init__(self):
