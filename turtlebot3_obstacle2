@@ -90,7 +90,7 @@ def collideCheckV2(scanList):
         if i < 0:
             res.append(i)
 
-    if any(i > 0 for i in danger_list and len(res)>3):
+    if any(i > 0 for i in danger_list) and len(res)>3:
         return True, danger_list.index(min(i for i in danger_list if i > 0)), danger_list
     ##CODE HERE
     else:
