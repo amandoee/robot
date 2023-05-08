@@ -116,7 +116,7 @@ def optimizedTurn(robot, turn, danger_list):
     #Evaluate if there needs to be a sharper turn:
     if danger_list[turn]<0.13+direction_scanscalar and turn<130 and turn>0:
             twist.linear.x=0
-            rospy.loginfo(danger_list[turn])
+            rospy.loginfo(danger_list)
             direction_coefficient*=-1
             #twist.angular.z*=0.2*(2.2*(1-(danger_list[turn]/0.3)))
             twist.linear.x=direction_coefficient*0.05
