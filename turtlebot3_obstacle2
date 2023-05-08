@@ -39,6 +39,7 @@ SAFE_STOP_DISTANCE = STOP_DISTANCE + LIDAR_ERROR
 ROBOT_WIDTH=0.30
 
 direction_coefficient=1
+stuckCount=0
 
 
 # Get I2C bus
@@ -96,20 +97,23 @@ def collideCheckV2(scanList):
     ##CODE HERE
     else:
         return False, 90, danger_list
+    
 
 
 
 def optimizedTurn(robot, turn, danger_list):
     #Read from which side the obstacle is. Implemented later
     global direction_coefficient
+    global stuckCount
 
     direction_scanscalar= 0 if direction_coefficient==1 else 0.02
 
-    duration=1
     twist = Twist()
-    #print(turn)
-    #Change linear velocity
-    twist.linear.x=LINEAR_VEL*direction_coefficient-0.05
+
+    theta=40
+
+    #HVORFOR GÅR COUNTEREN OPAD NÅR DEN BØR BLIVE RESET??
+
 
     #Change to be a dynamic range dependent on scan range
     if turn < 90:
@@ -117,37 +121,43 @@ def optimizedTurn(robot, turn, danger_list):
     else:
         twist.angular.z=-0.7
 
+    
+    if twist.linear.x<0.03:
+        stuckCount+=1
+    else:
+        stuckCount=0
+
+    rospy.loginfo(stuckCount)
 
     #Evaluate if there needs to be a sharper turn:
-    if danger_list[turn]<0.13+direction_scanscalar and turn<130 and turn>0:
-            twist.linear.x=0
-            rospy.loginfo(danger_list)
+    if stuckCount>9 or (danger_list[turn]<0.13+direction_scanscalar and turn<180-theta and turn>theta):
+
+            stuckCount=0
+
             direction_coefficient*=-1
             #twist.angular.z*=0.2*(2.2*(1-(danger_list[turn]/0.3)))
-            twist.linear.x=direction_coefficient*0.05
+            twist.linear.x=direction_coefficient*(0.08-((1-(danger_list[turn]/0.13))*0.08))
             twist.angular.z=0
             robot._cmd_pub.publish(twist)
             #rospy.sleep(0.2) #Test in real life to test how far it needs to go.
 
 
-    elif danger_list[turn]<0.3+direction_scanscalar:
-            #twist.angular.z*=(2.2-3*danger_list[turn])
-            
+    elif danger_list[turn]<0.5+direction_scanscalar and turn<180-theta and turn>theta:
+
+            stuckCount=0
+
             if turn < 90:
                 twist.angular.z=1
             else:
                 twist.angular.z=-1
 
+            twist.linear.x=direction_coefficient*(0.21-((1-(danger_list[turn]/0.5))*0.22))
 
-            twist.angular.z*=(1-(danger_list[turn]/0.3))*1.84+1#(2.84*(1-(danger_list[turn]/0.3)))
-
-            #twist.linear.x*=(((danger_list[turn]/0.3))/1)
-
-
-    for i in range(duration):
-                robot._cmd_pub.publish(twist)			
+            twist.angular.z*=(1-(danger_list[turn]/0.5))*2.04+0.3#(2.84*(1-(danger_list[turn]/0.3)))
 
 
+    #Post the instructions:
+    robot._cmd_pub.publish(twist)	
 
 
 
@@ -187,6 +197,7 @@ class Obstacle():
     def obstacle(self):
         twist = Twist()
         turtlebot_moving = True
+        global stuckCount
 
         while not rospy.is_shutdown():
 
@@ -204,14 +215,14 @@ class Obstacle():
                 duration=1
                     
                 optimizedTurn(self, collideIndex, danger_list)
-
+                
                 rospy.loginfo('Stop!')
-                    
                 twist.angular.z=0
 
             else:
                 twist.linear.x = LINEAR_VEL*direction_coefficient
                 twist.angular.z = 0.0
+                stuckCount=0
                 self._cmd_pub.publish(twist)
                 #rospy.loginfo('Distance of the obstacle : %f', min_distance)
 
@@ -226,3 +237,10 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+##TODO
+##CHANGE THE MINIMUM RADIAN PER SECOND.
