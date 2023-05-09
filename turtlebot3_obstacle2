@@ -116,7 +116,7 @@ def optimizedTurn(robot, turn, danger_list):
 
     if turn < 90:
         twist.angular.z=0.7
-x    else:
+x   else:
         twist.angular.z=-0.7
 
     
