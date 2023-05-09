@@ -111,8 +111,6 @@ def optimizedTurn(robot, turn, danger_list):
 
     theta=40
 
-    #HVORFOR GÅR COUNTEREN OPAD NÅR DEN BØR BLIVE RESET??
-
 
     #Change to be a dynamic range dependent on scan range
     if turn < 90:
