@@ -133,7 +133,7 @@ def optimizedTurn(robot, turn, danger_list):
             #twist.linear.x=direction_coefficient*(0.08-((1-(danger_list[turn]/0.13))*0.08))
             twist.angular.z=0
             robot._cmd_pub.publish(twist)
-            #rospy.sleep(0.2) #Test in real life to test how far it needs to go.
+            rospy.sleep(0.2) #Test in real life to test how far it needs to go.
 
 
     elif danger_list[turn]<0.3+direction_scanscalar and turn<180-theta and turn>theta:
