@@ -111,6 +111,7 @@ def optimizedTurn(robot, turn, danger_list):
 
     theta=40
 
+    rospy.loginfo(danger_list[turn])
 
     #Change to be a dynamic range dependent on scan range
     twist.linear.x=direction_coefficient*0.22
