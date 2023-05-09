@@ -113,9 +113,10 @@ def optimizedTurn(robot, turn, danger_list):
 
 
     #Change to be a dynamic range dependent on scan range
+
     if turn < 90:
         twist.angular.z=0.7
-    else:
+x    else:
         twist.angular.z=-0.7
 
     
@@ -206,10 +207,6 @@ class Obstacle():
             if collideBool:
 
                 #getAndUpdateColour()
-                
-                twist.linear.x=-0.2
-                twist.linear.y=0.0
-                duration=1
                     
                 optimizedTurn(self, collideIndex, danger_list)
                 
