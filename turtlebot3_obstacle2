@@ -111,7 +111,6 @@ def optimizedTurn(robot, turn, danger_list):
 
     theta=40
 
-    rospy.loginfo(danger_list[turn])
 
     #Change to be a dynamic range dependent on scan range
     twist.linear.x=direction_coefficient*0.22
@@ -126,6 +125,7 @@ def optimizedTurn(robot, turn, danger_list):
 
     #Evaluate if there needs to be a sharper turn:
     if stuckCount>9 or (danger_list[turn]<0.13+direction_scanscalar and turn<180-theta and turn>theta):
+            rospy.loginfo(danger_list[turn])
 
             stuckCount=0
 
