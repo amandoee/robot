@@ -77,7 +77,7 @@ def collideCheckV2(scanList):
     #Determine if robot needs to take decision yet (is obstacle close enough?). Also, where will it collide?
     for nr, i in enumerate(scanList):
         angle=nr-90.0
-        weight=(1-abs(angle)/90.0)
+        weight=1#(1-abs(angle)/90.0)
         scalar=0.5
 
         if (i>0.05 and i<weight*scalar) or (90-abs(angle)<45 and 90-abs(angle)>30 and i<0.25 and math.cos(90-abs(angle))*i<=ROBOT_WIDTH/2):
