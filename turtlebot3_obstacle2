@@ -77,7 +77,7 @@ def collideCheckV2(scanList):
     #Determine if robot needs to take decision yet (is obstacle close enough?). Also, where will it collide?
     for nr, i in enumerate(scanList):
         angle=nr-90.0
-        weight=1#(1-abs(angle)/90.0)
+        weight=(1-abs(angle)/90.0)
         scalar=0.5
 
         if (i>0.05 and i<weight*scalar and abs(angle)<= 50): #or (90-abs(angle)<45 and 90-abs(angle)>30 and i<0.25 and math.cos(90-abs(angle))*i<=ROBOT_WIDTH/2):
@@ -145,7 +145,7 @@ def optimizedTurn(robot, turn, danger_list):
 
             twist.linear.x=direction_coefficient*(0.21-((1-(danger_list[turn]/0.3))*0.22))
 
-            twist.angular.z*=2.84#(1-(danger_list[turn]/0.4))*2.04+0.3#(2.84*(1-(danger_list[turn]/0.3)))
+            twist.angular.z*=(1-(danger_list[turn]/0.4))*2.04+0.3#(2.84*(1-(danger_list[turn]/0.3)))
 
     #Check count before changing speed. Abs because speed indicates direction.
     if abs(twist.linear.x)<0.14:
