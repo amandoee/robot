@@ -91,7 +91,6 @@ def collideCheckV2(scanList):
         if i > 0:
             res.append(i)
 
-    rospy.loginfo(res)
     if any(i > 0 for i in danger_list) and len(res)>4:
         return True, danger_list.index(min(i for i in danger_list if i > 0)), danger_list
     ##CODE HERE
@@ -136,7 +135,7 @@ def optimizedTurn(robot, turn, danger_list):
 
             direction_coefficient*=-1
             #twist.angular.z*=0.2*(2.2*(1-(danger_list[turn]/0.3)))
-            twist.linear.x=direction_coefficient*(0.08-((1-(danger_list[turn]/0.13))*0.08))
+            #twist.linear.x=direction_coefficient*(0.08-((1-(danger_list[turn]/0.13))*0.08))
             twist.angular.z=0
             robot._cmd_pub.publish(twist)
             #rospy.sleep(0.2) #Test in real life to test how far it needs to go.
