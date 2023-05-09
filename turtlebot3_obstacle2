@@ -111,6 +111,11 @@ def optimizedTurn(robot, turn, danger_list):
 
     theta=40
 
+    #Check count before changing speed. Abs because speed indicates direction.
+    if abs(twist.linear.x)<0.03:
+        stuckCount+=1
+    else:
+        stuckCount=0
 
     #Change to be a dynamic range dependent on scan range
     twist.linear.x=direction_coefficient*0.22
@@ -119,11 +124,7 @@ def optimizedTurn(robot, turn, danger_list):
     elif turn<180-theta and turn>theta:
         twist.angular.z=-0.7
 
-    
-    if twist.linear.x<0.03:
-        stuckCount+=1
-    else:
-        stuckCount=0
+
 
     rospy.loginfo(stuckCount)
 
