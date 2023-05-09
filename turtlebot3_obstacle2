@@ -78,7 +78,7 @@ def collideCheckV2(scanList):
     for nr, i in enumerate(scanList):
         angle=nr-90.0
         weight=(1-abs(angle)/90.0)
-        scalar=1
+        scalar=0.5
 
         if (i>0.05 and i<weight*scalar) or (90-abs(angle)<45 and 90-abs(angle)>30 and i<0.25 and math.cos(90-abs(angle))*i<=ROBOT_WIDTH/2):
             danger_list.append(i)
@@ -111,11 +111,6 @@ def optimizedTurn(robot, turn, danger_list):
 
     theta=40
 
-    #Check count before changing speed. Abs because speed indicates direction.
-    if abs(twist.linear.x)<0.03:
-        stuckCount+=1
-    else:
-        stuckCount=0
 
     #Change to be a dynamic range dependent on scan range
     twist.linear.x=direction_coefficient*0.22
@@ -141,19 +136,22 @@ def optimizedTurn(robot, turn, danger_list):
             #rospy.sleep(0.2) #Test in real life to test how far it needs to go.
 
 
-    elif danger_list[turn]<0.5+direction_scanscalar and turn<180-theta and turn>theta:
-
-            stuckCount=0
+    elif danger_list[turn]<0.3+direction_scanscalar and turn<180-theta and turn>theta:
 
             if turn < 90:
                 twist.angular.z=1
             else:
                 twist.angular.z=-1
 
-            twist.linear.x=direction_coefficient*(0.21-((1-(danger_list[turn]/0.5))*0.22))
+            twist.linear.x=direction_coefficient*(0.21-((1-(danger_list[turn]/0.3))*0.22))
 
-            twist.angular.z*=(1-(danger_list[turn]/0.5))*2.04+0.3#(2.84*(1-(danger_list[turn]/0.3)))
+            twist.angular.z*=(1-(danger_list[turn]/0.3))*2.04+0.3#(2.84*(1-(danger_list[turn]/0.3)))
 
+    #Check count before changing speed. Abs because speed indicates direction.
+    if abs(twist.linear.x)<0.14:
+        stuckCount+=1
+    else:
+        stuckCount=0
 
     #Post the instructions:
     robot._cmd_pub.publish(twist)	
