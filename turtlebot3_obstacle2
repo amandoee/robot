@@ -63,7 +63,7 @@ stuckCount=0
 #         # Output data to the console RGB values
 #         # Uncomment the line below when you have read the red, green and blue values
 #         print("RGB(%d %d %d)" % (red, green, blue))
-
+#a
 def callback(data):
     #Print current velocity
     rospy.loginfo(data.twist.twist.linear.x)
