@@ -125,7 +125,7 @@ def optimizedTurn(robot, turn, danger_list):
         twist.angular.z=-1.3
 
 
-    #rospy.loginfo(turn)
+    rospy.loginfo(turn)
     #rospy.loginfo(danger_list)
 
     #rospy.loginfo(stuckCount)
