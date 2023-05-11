@@ -145,7 +145,7 @@ def optimizedTurn(robot, turn, danger_list):
             #rospy.sleep(0.2) #Test in real life to test how far it needs to go.
 
 
-    elif danger_list[turn]/scalar<0.35+direction_scanscalar and turn<=180-theta and turn>=theta:
+    elif danger_list[turn]<0.35+direction_scanscalar and turn<=180-theta and turn>=theta:
 
             if turn <= 90:
                 twist.angular.z=1
