@@ -91,7 +91,7 @@ def collideCheckV2(scanList):
         if i > 0:
             res.append(i)
 
-            if (danger_list[nr-2] == 0 and danger_list[nr+2]==0):
+            if (danger_list[nr-2] == 0 and danger_list[nr+2]==0) or (danger_list[nr-1] == 0 and danger_list[nr+1]==0) :
                 danger_list[nr]=0
 
 
