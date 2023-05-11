@@ -105,7 +105,7 @@ def optimizedTurn(robot, turn, danger_list):
     global direction_coefficient
     global stuckCount
 
-    direction_scanscalar= 0 if direction_coefficient==1 else 0.02
+    direction_scanscalar= 0.02 if direction_coefficient==1 else 0.02
 
     twist = Twist()
 
@@ -230,10 +230,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-##TODO
-##CHANGE THE MINIMUM RADIAN PER SECOND.
