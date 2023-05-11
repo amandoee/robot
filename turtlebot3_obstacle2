@@ -115,15 +115,18 @@ def optimizedTurn(robot, turn, danger_list):
 
     twist = Twist()
 
+    theta_outer=40
+
+
     theta=60
     theta_inner=70
     theta_diag=70
 
     #Change to be a dynamic range dependent on scan range
     twist.linear.x=direction_coefficient*0.22
-    if turn <= 90 and turn<=180-theta and turn>=theta:
+    if turn <= 90 and turn<=180-theta_outer and turn>=theta_outer:
         twist.angular.z=1.3
-    elif turn<=180-theta and turn>=theta:
+    elif turn<=180-theta_outer and turn>=theta_outer:
         twist.angular.z=-1.3
 
 
