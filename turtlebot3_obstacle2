@@ -146,7 +146,7 @@ def optimizedTurn(robot, turn, danger_list):
 
             twist.linear.x=direction_coefficient*(0.22-((1-(danger_list[turn]/0.35))*0.22))
 
-            twist.angular.z*=(1-(danger_list[turn]/0.35))*1.95+0.93#(2.84*(1-(danger_list[turn]/0.3)))
+            twist.angular.z*=(1-(danger_list[turn]/0.35))*1.95+1.3#(2.84*(1-(danger_list[turn]/0.3)))
 
     #Check count before changing speed. Abs because speed indicates direction.
     if abs(twist.linear.x)<0.14:
