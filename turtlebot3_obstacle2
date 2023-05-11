@@ -119,12 +119,12 @@ def optimizedTurn(robot, turn, danger_list):
         twist.angular.z=-1.3
 
 
-    rospy.loginfo(turn)
+    rospy.loginfo(stuckCount)
 
     #rospy.loginfo(stuckCount)
 
     #Evaluate if there needs to be a sharper turn:
-    if stuckCount>9 or (danger_list[turn]<0.13+direction_scanscalar and turn<=180-theta and turn>=theta):
+    if stuckCount>9 or (danger_list[turn]<0.15+direction_scanscalar and turn<=180-theta and turn>=theta):
             rospy.loginfo("Change direction")
             stuckCount=0
 
