@@ -87,9 +87,14 @@ def collideCheckV2(scanList):
     
     #Check if there is any danger value in array. If so, return index of the lowest distance.
     res = []
-    for i in danger_list:
+    for nr, i in enumerate(danger_list):
         if i > 0:
             res.append(i)
+
+            if (danger_list[nr-1] == 0 and danger_list[nr+1]==0):
+                danger_list[nr]=0
+
+
 
     if any(i > 0 for i in danger_list) and len(res)>6:
         return True, danger_list.index(min(i for i in danger_list if i > 0)), danger_list
