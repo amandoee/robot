@@ -81,7 +81,7 @@ def collideCheckV2(scanList):
         scalar=0.5
 
         if (i>0.05 and i<weight*scalar and abs(angle)<= 50): #or (90-abs(angle)<45 and 90-abs(angle)>30 and i<0.25 and math.cos(90-abs(angle))*i<=ROBOT_WIDTH/2):
-            danger_list.append(i)
+            danger_list.append(i*weight)
         else:
             danger_list.append(0)
     
