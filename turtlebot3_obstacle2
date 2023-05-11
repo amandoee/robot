@@ -38,7 +38,7 @@ SAFE_STOP_DISTANCE = STOP_DISTANCE + LIDAR_ERROR
 
 ROBOT_WIDTH=0.30
 
-direction_coefficient=-1
+direction_coefficient=1
 stuckCount=0
 
 
