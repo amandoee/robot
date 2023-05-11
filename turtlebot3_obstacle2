@@ -116,7 +116,7 @@ def optimizedTurn(robot, turn, danger_list):
     twist = Twist()
 
     theta_inner=70
-    theta_diag=
+    theta_diag=70
 
     #Change to be a dynamic range dependent on scan range
     twist.linear.x=direction_coefficient*0.22
