@@ -115,6 +115,7 @@ def optimizedTurn(robot, turn, danger_list):
 
     twist = Twist()
 
+    theta=40
     theta_inner=70
     theta_diag=70
 
