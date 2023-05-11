@@ -135,7 +135,7 @@ def optimizedTurn(robot, turn, danger_list):
             rospy.loginfo("Change direction")
             stuckCount=0
 
-            #direction_coefficient*=-1
+            direction_coefficient*=-1
             #twist.angular.z*=0.2*(2.2*(1-(danger_list[turn]/0.3)))
             #twist.linear.x=direction_coefficient*(0.08-((1-(danger_list[turn]/0.13))*0.08))
             twist.angular.z=0
