@@ -125,7 +125,7 @@ def optimizedTurn(robot, turn, danger_list):
     #rospy.loginfo(stuckCount)
 
     #Evaluate if there needs to be a sharper turn:
-    if (danger_list[turn]*scalar<0.13+direction_scanscalar and turn<=180-theta and turn>=theta):# or stuckCount>9:
+    if (danger_list[turn]*scalar<0.14+direction_scanscalar and turn<=180-theta and turn>=theta):# or stuckCount>9:
             rospy.loginfo("Change direction")
             stuckCount=0
 
