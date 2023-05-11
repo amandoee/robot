@@ -121,6 +121,7 @@ def optimizedTurn(robot, turn, danger_list):
 
 
     rospy.loginfo(turn)
+    rospy.loginfo(danger_list)
 
     #rospy.loginfo(stuckCount)
 
