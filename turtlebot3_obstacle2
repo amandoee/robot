@@ -205,7 +205,8 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     twist.linear.x *= direction_coefficient
 
     #Scalar applied to angular if direction is positive.
-    twist.angular.z*=direction_turn_scalar
+    if (direction_coefficient==1):
+        twist.angular.z*=direction_turn_scalar
 
     robot._cmd_pub.publish(twist)
     
