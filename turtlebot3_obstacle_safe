@@ -1,0 +1,270 @@
+#!/usr/bin/env python
+#################################################################################
+# Copyright 2018 ROBOTIS CO., LTD.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#################################################################################
+
+# Authors: Gilbert #
+
+import rospy
+import time
+import math
+from sensor_msgs.msg import LaserScan
+from geometry_msgs.msg import Twist
+
+from nav_msgs.msg import Odometry
+
+import smbus
+
+
+EVEN = False
+LINEAR_VEL = 0.22
+MAX_ANGULAR_VEL=2.84
+STOP_DISTANCE = 0.3
+LIDAR_ERROR = 0.05
+SAFE_STOP_DISTANCE = STOP_DISTANCE + LIDAR_ERROR
+
+FAR_SEARCH_RANGE=0.5
+MEDIUM_SEARCH_RANGE=0.35
+CLOSE_SEARCH_RANGE=0.2
+
+ROBOT_WIDTH=0.178*2
+
+direction_coefficient=1
+stuckCount=0
+
+
+# Get I2C bus
+#bus = smbus.SMBus(1)
+
+# ISL29125 address, 0x44(68)
+# Select configuation-1register, 0x01(01)
+# 0x0D(13) Operation: RGB, Range: 360 lux, Res: 16 Bits
+#bus.write_byte_data(0x44, 0x01, 0x05)
+
+
+#RGB reading function
+# def getAndUpdateColour():
+# 	# Read the data from the sensor
+#         data = bus.read_i2c_block_data(0x44,0x09,6)
+
+#         # Convert the data to green, red and blue int values
+#         green = data[1]*256+data[0]
+#         red = data[3]*256+data[2]
+#         blue = data[5]*256+data[4]
+#         # Output data to the console RGB values
+#         # Uncomment the line below when you have read the red, green and blue values
+#         print("RGB(%d %d %d)" % (red, green, blue))
+#a
+
+def leftOrRight(values):
+    length=len(values)
+    left=0
+    right=0
+
+    for index, i in enumerate(values):
+        if index<=(length/2) and i!=0:
+            left+=i
+        elif index>(length/2) and i!=0:
+            right+=i
+    
+    if right>left: 
+        return 1  
+    else: 
+        return -1
+
+def tunnelCheck(self, samples_view, tunnelMiddleRange, threshold):
+
+        lidar_distances=self.get_scan(samples_view)
+        tunnelRange=[]
+
+        for i in lidar_distances:
+            if i<=threshold:
+                tunnelRange.append(i)
+            else:
+                tunnelRange.append(0)
+        
+        #Only use the middle part
+        tunnelRange=tunnelRange[((len(lidar_distances)/2)-(tunnelMiddleRange/2)):((len(lidar_distances)/2)+(tunnelMiddleRange/2))]
+
+        #Does the middle have any non zero values?
+        if any(i>0 for i in tunnelRange):
+            return False
+        else:
+            return True
+
+
+def dangerScanWithRange(self,samples_view,excluded_middle,threshold):
+
+    lidar_distances=self.get_scan(samples_view)
+    dangersWithinRange=[]
+
+    #If excluded middle is zero, then get scan with apropriate samples view. Detect danger within threshold.
+    if excluded_middle==0:
+
+        #Make collection of left and right collisions under the threshold:
+        for i in lidar_distances:
+            if i<=threshold:
+                dangersWithinRange.append(i)
+            else:
+                dangersWithinRange.append(0)
+        
+        if leftOrRight(dangersWithinRange)==-1:
+            turnCoeffecient=1
+        else:
+            turnCoeffecient=-1
+
+        return turnCoeffecient
+
+    #If excluded middle is larger than 0, then averages must be calculated to take a choice of which direction to go.
+    else:
+
+        for i in lidar_distances:
+            if i<=threshold:
+                dangersWithinRange.append(i)
+            else:
+                dangersWithinRange.append(0)
+        
+        #Remove the middle part
+        left=dangersWithinRange[0:(excluded_middle/2)]
+        right=dangersWithinRange[(length/2)+(excluded_middle/2):length]
+        left.extend(right)
+        dangersWithinRangeWithoutMiddle=left
+
+        if leftOrRight(dangersWithinRangeWithoutMiddle)==-1:
+                turnCoeffecient=1
+        else:
+                turnCoeffecient=-1
+
+        return turnCoeffecient
+
+
+def turningFormula(search_range,min_distance):
+    
+    #CLOSE_RANGE TURNING
+    if search_range==CLOSE_SEARCH_RANGE:
+        return 1#MAX_ANGULAR_VEL*(1-(min_distance+(ROBOT_WIDTH/2))/CLOSE_SEARCH_RANGE)
+
+    #MEDIUM_RANGE TURNING
+    elif search_range==MEDIUM_SEARCH_RANGE:
+        return 1#MAX_ANGULAR_VEL*(1-(min_distance+(ROBOT_WIDTH/2))/MEDIUM_SEARCH_RANGE)
+    
+    #FAR RANGE TURNING
+    else:
+        return 1.4
+
+
+def speedFormula(search_range,min_distance):
+
+    #CLOSE RANGE LINEAR SPEED (SLOW)
+    if search_range==CLOSE_SEARCH_RANGE:
+        return 0.22#MAX_ANGULAR_VEL*(1-(min_distance+(ROBOT_WIDTH/2))/CLOSE_SEARCH_RANGE)
+
+    #MEDIUM_RANGE SPEED
+    elif search_range==MEDIUM_SEARCH_RANGE:
+        return 0.22#MAX_ANGULAR_VEL*(1-(min_distance+(ROBOT_WIDTH/2))/MEDIUM_SEARCH_RANGE)
+    
+    #FAR RANGE SPEED
+    else:
+        return 0.22
+
+
+class Obstacle():
+
+    def __init__(self):
+        self._cmd_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
+        self.obstacle()
+        
+    def get_scan(self, samples_view):
+        scan = rospy.wait_for_message('scan', LaserScan)
+        scan_filter = []
+       
+        samples = len(scan.ranges)  # The number of samples is defined in 
+                                    # turtlebot3_<model>.gazebo.xacro file,
+                                    # the default is 360.
+                                    # 1 <= samples_view <= samples
+        
+        if samples_view > samples:
+            samples_view = samples
+
+        if samples_view == 1:
+            scan_filter.append(scan.ranges[0])
+
+        else:
+            left_lidar_samples_ranges = -(samples_view//2 + samples_view % 2)
+            right_lidar_samples_ranges = samples_view//2
+            
+            left_lidar_samples = scan.ranges[left_lidar_samples_ranges:]
+            right_lidar_samples = scan.ranges[:right_lidar_samples_ranges]
+            scan_filter.extend(left_lidar_samples + right_lidar_samples)
+
+        for i in range(samples_view):
+            if scan_filter[i] == float('Inf'):
+                scan_filter[i] = 3.5
+            elif math.isnan(scan_filter[i]):
+                scan_filter[i] = 0
+        
+
+        return scan_filter
+
+    def obstacle(self):
+        twist = Twist()
+        turtlebot_moving = True
+        twist.linear.x=2.2
+
+        while not rospy.is_shutdown():
+            lidar_distances = self.get_scan(180)
+            min_distance = min(lidar_distances)
+
+            #CLOSE RANGE
+            if min_distance<=CLOSE_SEARCH_RANGE:
+                
+                #Check if tunnel or not:
+                if tunnelCheck(self,90,40,CLOSE_SEARCH_RANGE):
+                    twist.angular.z=dangerScanWithRange(self,90,0,CLOSE_SEARCH_RANGE)*0.5
+                    twist.linear.x=0.05
+
+                else:
+                    twist.angular.z=dangerScanWithRange(self,90,0,CLOSE_SEARCH_RANGE)*turningFormula(CLOSE_SEARCH_RANGE,min_distance)
+                    twist.linear.x=LINEAR_VEL
+                    rospy.loginfo(twist.angular.z)
+
+            #MEDIUM RANGE
+            elif min_distance<=MEDIUM_SEARCH_RANGE:
+                twist.angular.z=dangerScanWithRange(self,180,0,MEDIUM_SEARCH_RANGE)*turningFormula(MEDIUM_SEARCH_RANGE,min_distance)
+                twist.linear.x=LINEAR_VEL
+                rospy.loginfo(twist.angular.z)
+
+            #FAR RANGE
+            elif min_distance<=FAR_SEARCH_RANGE:
+                twist.angular.z=dangerScanWithRange(self,180,0,FAR_SEARCH_RANGE)*turningFormula(CLOSE_SEARCH_RANGE,min_distance)
+                twist.linear.x=LINEAR_VEL
+                rospy.loginfo(twist.angular.z)
+
+            else:
+                twist.angular.z=0
+
+            #Post result
+            self._cmd_pub.publish(twist)
+
+
+def main():
+    rospy.init_node('turtlebot3_obstacle')
+    try:
+        obstacle = Obstacle()
+    except rospy.ROSInterruptException:
+        pass
+
+if __name__ == '__main__':
+    main()
