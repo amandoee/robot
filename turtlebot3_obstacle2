@@ -83,7 +83,7 @@ def collideCheckV2(scanList):
         if i > 0:
             res.append(i)
 
-            if (scanList[nr-2] == 0 and scanList[nr+2]==0) or (scanList[nr-1] == 0 and scanList[nr+1]==0) :
+            if (scanList[(nr-2)%180] == 0 and scanList[(nr+2)%180]==0) or (scanList[(nr-1)%180] == 0 and scanList[(nr+1)%180]==0) :
                 scanList[nr]=0
     if len(res) < 4:
         return True, 90, zones_detection_angle, zones_min_distance , danger_list
