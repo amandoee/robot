@@ -147,10 +147,10 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     
     max_turn_speed_distance = 0
     max_turn_speed = 2.84
-    min_turn_speed = 1.1
+    min_turn_speed = 1.4
     max_speed = 0.22
     min_speed = 0.05
-    quick_turn_distance = scaling_func(0, 0.3, 90, 0.18, angle_to_wall)
+    quick_turn_distance = scaling_func(0, 0.3, 90, 0.1, angle_to_wall)
     normal_turn_distance = 0.1 #scaling_func(0, 0.35, 90, 0.3, angle_to_wall) if angle_to_wall > cone_angle else front_distance
     chance_direction_distance = 0.3
     turn_speed= scaling_func(0, 1.7, 90, 0.6, angle_to_wall) if angle_to_wall > cone_angle else front_collision_turn_speed
