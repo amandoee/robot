@@ -106,7 +106,7 @@ def collideCheckV2(scanList):
             
             if i < zones_min_distance[zone_index]:
                 zones_min_distance[zone_index] = i
-                zones_detection_angle[zone_index] = abs(angle)
+                zones_detection_angle[zone_index] = angle
                 
         else:
             danger_list.append(0)
@@ -137,22 +137,23 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     cone_angle = 30
     angle_to_wall = abs(90-turn)
 
-    distance_to_right_wall = zones_min_distance[0]/math.cos((zones_angle[0]/180)*3.14)
-    distance_to_left_wall = zones_min_distance[2]/math.cos((zones_angle[2]/180)*3.14)
+    distance_to_right_wall = zones_min_distance[2]/math.cos((zones_angle[0]/180)*3.14)
+    distance_to_left_wall = zones_min_distance[0]/math.cos((zones_angle[2]/180)*3.14)
     distance_to_closest_wall = danger_list[turn]/math.cos((angle_to_wall/180)*3.14) if angle_to_wall < cone_angle else danger_list[turn]
     
     front_distance = 0.5
     front_collision_turn_speed = 0.7
     front_quick_turn_speed = 1
+    front_change_direction_distance=0.2
     
-    max_turn_speed_distance = 0.2
+    max_turn_speed_distance = 0
     max_turn_speed = 1.7
     min_turn_speed = 0.7
     max_speed = 0.22
     min_speed = 0.05
-    quick_turn_distance = 0.3 #scaling_func(0, 0.25, 90, 0.2, angle_to_wall)
-    normal_turn_distance = 0.2 #scaling_func(0, 0.35, 90, 0.3, angle_to_wall) if angle_to_wall > cone_angle else front_distance
-    chance_direction_distance = 0.2
+    quick_turn_distance = scaling_func(0, 0.25, 90, 0, angle_to_wall)
+    normal_turn_distance = 0.1 #scaling_func(0, 0.35, 90, 0.3, angle_to_wall) if angle_to_wall > cone_angle else front_distance
+    chance_direction_distance = 0.3
     turn_speed= scaling_func(0, 1.7, 90, 0.6, angle_to_wall) if angle_to_wall > cone_angle else front_collision_turn_speed
     
     twist.linear.x=0.22
@@ -161,7 +162,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     elif distance_to_closest_wall < normal_turn_distance:
         twist.angular.z=(-turn_speed)
     elif zones_min_distance[1] < front_distance:
-        if turn <= 90:
+        if zones_angle[1] <= 0:
             twist.angular.z = front_collision_turn_speed
         else:
             twist.angular.z = -front_collision_turn_speed
@@ -173,29 +174,32 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     # rospy.loginfo(angle_to_wall)
     # rospy.loginfo(quick_turn_distance)
     rospy.loginfo(zones_min_distance)
-    
-    if zones_min_distance[0] < chance_direction_distance and zones_min_distance[1] < chance_direction_distance and zones_min_distance[2] < chance_direction_distance:# or stuckCount>9:
+    temp=[]  
+
+    if (distance_to_right_wall < chance_direction_distance and zones_min_distance[1] < chance_direction_distance and distance_to_left_wall < chance_direction_distance) or (zones_min_distance[1]<front_change_direction_distance):# or stuckCount>9:
         rospy.loginfo("Change direction")
         stuckCount=0
         direction_coefficient*=-1
         twist.angular.z=0
-        robot._cmd_pub.publish(twist)
-        rospy.sleep(0.1)
+        #robot._cmd_pub.publish(twist)
+        #rospy.sleep(0.1)
         
-        
+      
     
-    if distance_to_closest_wall<quick_turn_distance:
+    elif distance_to_closest_wall<quick_turn_distance:
 
         if turn <= 90:
+            temp=[quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall]
             twist.angular.z= scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
         else:
+            temp=[quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall]
             twist.angular.z=-scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
-
-        twist.linear.x= scaling_func(quick_turn_distance, max_speed, chance_direction_distance, min_speed, distance_to_closest_wall)
+        rospy.loginfo(temp)
+        twist.linear.x= scaling_func(quick_turn_distance, max_speed, max_turn_speed_distance, min_speed, distance_to_closest_wall)
     
 
-    # rospy.loginfo(twist.linear.x)
-    # rospy.loginfo(twist.angular.z)
+    rospy.loginfo(twist.linear.x)
+    rospy.loginfo(twist.angular.z)
     
     twist.linear.x *= direction_coefficient
     robot._cmd_pub.publish(twist)
