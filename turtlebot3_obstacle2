@@ -131,7 +131,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     global stuckCount
     scaling_func = lambda in_start, out_start, in_end, out_end, input_value : (((out_end-out_start)/(in_end-in_start))*(input_value-in_start)) + out_start
     direction_scanscalar= 0 if direction_coefficient==1 else 0.02
-    direction_turn_scalar=1.3
+    direction_turn_scalar=1.2
 
     twist = Twist()
     cone_angle = 30
@@ -152,6 +152,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
     max_speed = 0.22
     min_speed = 0.05
+
     quick_turn_distance = scaling_func(0, 0.3, 90, 0.25, angle_to_wall)
     normal_turn_distance = 0.1 #scaling_func(0, 0.35, 90, 0.3, angle_to_wall) if angle_to_wall > cone_angle else front_distance
     chance_direction_distance = 0.2
@@ -196,6 +197,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
             temp=[quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall]
             twist.angular.z=-scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
         rospy.loginfo(temp)
+
         twist.linear.x= scaling_func(quick_turn_distance, max_speed, max_turn_speed_distance, min_speed, distance_to_closest_wall)
     
 
