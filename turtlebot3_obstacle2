@@ -148,7 +148,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     max_turn_speed_distance = 0
     max_turn_speed = 2.8
     min_turn_speed = 1.4
-    min_turn_angle=30
+    min_turn_angle=50
 
     max_speed = 0.22
     min_speed = 0.05
