@@ -154,7 +154,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     min_speed = 0.05
 
     quick_turn_distance = scaling_func(0, 0.3, 90, 0.20, angle_to_wall)
-    chance_direction_distance = 0.2
+    chance_direction_distance = 0.15
 
     tunnel_angle=70
    
