@@ -202,7 +202,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
             twist.angular.z=-scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
 
         rospy.loginfo("Quick turn")
-        rospy.loginfo("Turn is ", turn)
+        rospy.loginfo(turn)
         twist.linear.x= scaling_func(quick_turn_distance, max_speed, max_turn_speed_distance, min_speed, distance_to_closest_wall)
     
 
