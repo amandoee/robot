@@ -170,13 +170,15 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
             twist.angular.z = front_collision_turn_speed
         else:
             twist.angular.z = -front_collision_turn_speed
-            
+    
+        rospy.loginfo("Front avoidance turn")
+
     else:
          twist.angular.z=0
         
         
-    rospy.loginfo([distance_to_left_wall,distance_to_right_wall,zones_min_distance[1]])
-    rospy.loginfo([zones_angle[0],zones_angle[2],zones_min_distance[0],zones_min_distance[2]])
+    #rospy.loginfo([distance_to_left_wall,distance_to_right_wall,zones_min_distance[1]])
+    #rospy.loginfo([zones_angle[0],zones_angle[2],zones_min_distance[0],zones_min_distance[2]])
     #rospy.loginfo(distance_to_right_wall)
     #rospy.loginfo(zones_angle)
     temp=[]  
@@ -186,6 +188,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
         stuckCount=0
         direction_coefficient*=-1
         twist.angular.z=0
+        rospy.loginfo("Changing direction")
         #robot._cmd_pub.publish(twist)
         #rospy.sleep(0.1)
         
@@ -197,7 +200,8 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
             twist.angular.z= scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
         else:
             twist.angular.z=-scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
-                
+
+        rospy.loginfo("Quick turn")
         twist.linear.x= scaling_func(quick_turn_distance, max_speed, max_turn_speed_distance, min_speed, distance_to_closest_wall)
     
 
