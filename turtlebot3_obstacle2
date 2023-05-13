@@ -159,7 +159,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     chance_direction_distance = 0.16
     
     tunnel_front_threshold=0.18
-    tunnel_angle=70
+    tunnel_angle=60
    
     
     twist.linear.x=0.22
