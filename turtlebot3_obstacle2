@@ -77,7 +77,7 @@ def collideCheckV2(scanList):
 
     direction_scanscalar= 10 if direction_coefficient==1 else 0.00 #TODO
 
-    zone_angle = 60#-direction_scanscalar
+    zone_angle = 60
 
     #Check if there is any danger value in array. If so, return index of the lowest distance.
     res = []
@@ -202,7 +202,6 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
             twist.angular.z=-scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
 
         rospy.loginfo("Quick turn")
-        rospy.loginfo(turn)
         twist.linear.x= scaling_func(quick_turn_distance, max_speed, max_turn_speed_distance, min_speed, distance_to_closest_wall)
     
 
@@ -216,7 +215,9 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
         twist.angular.z*=direction_turn_scalar
 
-    robot._cmd_pub.publish(twist)
+    rospy.loginfo(turn)
+
+    #robot._cmd_pub.publish(twist)
     
     
     	
