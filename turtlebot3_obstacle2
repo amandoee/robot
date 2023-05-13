@@ -175,7 +175,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
         
         
     rospy.loginfo([distance_to_left_wall,distance_to_right_wall,zones_min_distance[1]])
-    rospy.loginfo([zone_angle[0],zone_angle[2],zones_min_distance[0],zones_min_distance[2]])
+    rospy.loginfo([zones_angle[0],zones_angle[2],zones_min_distance[0],zones_min_distance[2]])
     #rospy.loginfo(distance_to_right_wall)
     #rospy.loginfo(zones_angle)
     temp=[]  
