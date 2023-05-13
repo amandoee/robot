@@ -128,8 +128,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     global direction_coefficient
     global stuckCount
     scaling_func = lambda in_start, out_start, in_end, out_end, input_value : (((out_end-out_start)/(in_end-in_start))*(input_value-in_start)) + out_start
-    #direction_scanscalar= 0 if direction_coefficient==1 else 0.02 #TODO FJERN LINJEN UNDER OG ERSTAT MED DENNE
-    direction_scanscalar= 0.02 if direction_coefficient==1 else 0
+    direction_scanscalar= 0 if direction_coefficient==1 else 0.02 #TODO FJERN LINJEN UNDER OG ERSTAT MED DENNE
 
     direction_turn_scalar=1.2
 
@@ -207,8 +206,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     twist.linear.x *= direction_coefficient
 
     #Scalar applied to angular if direction is positive.
-    #if (direction_coefficient==1): #TODO FJERN LINJEN UNDER ERSTAT MED DENNE.
-    if (direction_coefficient==-1):
+    if (direction_coefficient==1): #direction before
 
         twist.angular.z*=direction_turn_scalar
 
@@ -241,7 +239,7 @@ class Obstacle():
             samples_view = samples
 
         if samples_view == 1:
-            scan_filter=[scan.ranges[i-(direction_coefficient*(-1)*90)] for i in range(180)] #TODO SKIFT DETTE TIL RIGTIG RETNING
+            scan_filter=[scan.ranges[i-(direction_coefficient*90)] for i in range(180)]
 
 
         for i in range(samples_view):
