@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#################################################################################
 # Copyright 2018 ROBOTIS CO., LTD.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,7 +73,7 @@ def collideCheckV2(scanList):
     danger_list=[]
     zones_detection_angle = [0,0,0]
     zones_min_distance = [10,10,10]
-    zone_angle = 40
+    zone_angle = 60
 
     #Check if there is any danger value in array. If so, return index of the lowest distance.
     res = []
@@ -91,7 +89,6 @@ def collideCheckV2(scanList):
     #Determine if robot needs to take decision yet (is obstacle close enough?). Also, where will it collide?
     for nr, i in enumerate(scanList):
         angle = nr-90.0
-        weight = (1-(abs(angle)/130.0))
         scalar=1
         if nr < zone_angle:
             zone_index = 0
@@ -137,48 +134,46 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     cone_angle = 30
     angle_to_wall = abs(90-turn)
 
-    distance_to_right_wall = zones_min_distance[2]/math.cos((zones_angle[0]/180)*3.14)
-    distance_to_left_wall = zones_min_distance[0]/math.cos((zones_angle[2]/180)*3.14)
-    distance_to_closest_wall = danger_list[turn]/math.cos((angle_to_wall/180)*3.14) if angle_to_wall < cone_angle else danger_list[turn]
+    distance_to_right_wall = zones_min_distance[2]*math.cos((zones_angle[0]/180)*3.14)
+    distance_to_left_wall = zones_min_distance[0]*math.cos((zones_angle[2]/180)*3.14)
+    distance_to_closest_wall = danger_list[turn]*math.cos((angle_to_wall/180)*3.14) if angle_to_wall < cone_angle else danger_list[turn]
     
-    front_distance = 0.4
-    front_collision_turn_speed = 1.1
-    front_change_direction_distance=0.13
+    front_distance = 0.5
+    front_collision_turn_speed = 0.7
+    front_change_direction_distance=0.15
     
     max_turn_speed_distance = 0
     max_turn_speed = 2.8
-    min_turn_speed = 1.4
-    min_turn_angle=50
+    min_turn_speed = 1.1
+    min_turn_angle=90
+    front_clear_distance = 0.3
+    adjesent_wall_distance = 0.3
 
     max_speed = 0.22
     min_speed = 0.05
 
-    quick_turn_distance = scaling_func(0, 0.3, 90, 0.25, angle_to_wall)
-    normal_turn_distance = 0.1 #scaling_func(0, 0.35, 90, 0.3, angle_to_wall) if angle_to_wall > cone_angle else front_distance
+    quick_turn_distance = scaling_func(0, 0.3, 90, 0.20, angle_to_wall)
     chance_direction_distance = 0.2
-    turn_speed= scaling_func(0, 1.7, 90, 0.6, angle_to_wall) if angle_to_wall > cone_angle else front_collision_turn_speed
+   
     
     twist.linear.x=0.22
-    if turn <= 90 and distance_to_closest_wall < normal_turn_distance:
-         twist.angular.z=turn_speed
-    elif distance_to_closest_wall < normal_turn_distance:
-        twist.angular.z=(-turn_speed)
-    elif zones_min_distance[1] < front_distance:
+    
+    if zones_min_distance[1] < front_distance:
         if zones_angle[1] <= 0:
             twist.angular.z = front_collision_turn_speed
         else:
             twist.angular.z = -front_collision_turn_speed
             
     else:
-        twist.angular.z=0
+         twist.angular.z=0
         
         
-    # rospy.loginfo(angle_to_wall)
-    # rospy.loginfo(quick_turn_distance)
-    rospy.loginfo(zones_min_distance)
+    #rospy.loginfo([distance_to_left_wall,distance_to_right_wall,zones_min_distance[1]])
+    #rospy.loginfo(distance_to_right_wall)
+    rospy.loginfo(zones_angle)
     temp=[]  
 
-    if (distance_to_right_wall < chance_direction_distance and zones_min_distance[1] < chance_direction_distance and distance_to_left_wall < chance_direction_distance) or (zones_min_distance[1]<front_change_direction_distance):# or stuckCount>9:
+    if (distance_to_right_wall < chance_direction_distance and zones_min_distance[1] < chance_direction_distance and distance_to_left_wall < chance_direction_distance):# or (zones_min_distance[1]<front_change_direction_distance):# or stuckCount>9:
         rospy.loginfo("Change direction")
         stuckCount=0
         direction_coefficient*=-1
@@ -188,15 +183,13 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
         
       
     
-    elif distance_to_closest_wall<quick_turn_distance and angle_to_wall<min_turn_angle:
+    elif distance_to_closest_wall<quick_turn_distance and angle_to_wall<min_turn_angle and zones_min_distance[1]<front_clear_distance and (distance_to_right_wall > adjesent_wall_distance or distance_to_left_wall > adjesent_wall_distance)  :
 
         if turn <= 90:
-            temp=[quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall]
             twist.angular.z= scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
         else:
-            temp=[quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall]
             twist.angular.z=-scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
-        rospy.loginfo(temp)
+        
 
         twist.linear.x= scaling_func(quick_turn_distance, max_speed, max_turn_speed_distance, min_speed, distance_to_closest_wall)
     
@@ -212,57 +205,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
     robot._cmd_pub.publish(twist)
     
-    # theta_outer=40
-
-    # scalar=(1-abs((turn-90))/130.0)
-    # theta=60
-    # theta_inner=70
-    # theta_diag=70
-
-    #Change to be a dynamic range dependent on scan range
-    # twist.linear.x=direction_coefficient*0.22
-    # if turn <= 90 and turn<=180-theta_outer and turn>=theta_outer:
-    #     twist.angular.z=1.3+(1-(danger_list[turn]/0.5))*1.95
-    # elif turn<=180-theta_outer and turn>=theta_outer:
-    #     twist.angular.z=-1.3+(1-(danger_list[turn]/0.5))*1.95
-
-
-    # rospy.loginfo(turn)
-    # #rospy.loginfo(danger_list)
-
-    # #rospy.loginfo(stuckCount)
-
-    # #Evaluate if there needs to be a sharper turn:
-    # if (danger_list[turn]<0.14+direction_scanscalar and turn<=180-theta_inner and turn>=theta_inner) or (danger_list[turn]<0.20+direction_scanscalar and turn>=180-theta_diag and turn<=theta_diag):# or stuckCount>9:
-    #         rospy.loginfo("Change direction")
-    #         stuckCount=0
-
-    #         direction_coefficient*=-1
-    #         #twist.angular.z*=0.2*(2.2*(1-(danger_list[turn]/0.3)))
-    #         #twist.linear.x=direction_coefficient*(0.08-((1-(danger_list[turn]/0.13))*0.08))
-    #         twist.angular.z=0
-    #         robot._cmd_pub.publish(twist)
-    #         #rospy.sleep(0.2) #Test in real life to test how far it needs to go.
-
-
-    # elif danger_list[turn]/scalar<0.35+direction_scanscalar and turn<=180-theta and turn>=theta:
-
-    #         if turn <= 90:
-    #             twist.angular.z=1
-    #         else:
-    #             twist.angular.z=-1
-
-    #         twist.linear.x=direction_coefficient*(0.22-((1-(danger_list[turn]/0.35))*0.22))
-
-    #         twist.angular.z*=(1-(danger_list[turn]/0.35))*1.95+1.3#(2.84*(1-(danger_list[turn]/0.3)))
-
-    # #Check count before changing speed. Abs because speed indicates direction.
-    # if abs(twist.linear.x)<0.14:
-    #     stuckCount+=1
-    # else:
-    #     stuckCount=0
-
-    #Post the instructions:
+    
     	
 
 
