@@ -167,9 +167,9 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     
     if zones_min_distance[1] < front_distance:
         if zones_angle[1] <= 0:
-            twist.angular.z = -front_collision_turn_speed
-        else:
             twist.angular.z = front_collision_turn_speed
+        else:
+            twist.angular.z = -front_collision_turn_speed
     
         rospy.loginfo("Front avoidance turn")
 
