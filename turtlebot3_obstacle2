@@ -75,7 +75,7 @@ def collideCheckV2(scanList):
     zones_detection_angle = [0,0,0]
     zones_min_distance = [10,10,10]
 
-    direction_scanscalar= 5 if direction_coefficient==1 else 0.00 #TODO
+    direction_scanscalar= 10 if direction_coefficient==1 else 0.00 #TODO
 
     zone_angle = 60-direction_scanscalar
 
