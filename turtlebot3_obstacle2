@@ -233,7 +233,7 @@ class Obstacle():
             samples_view = samples
 
         if samples_view == 1:
-            scan_filter=[scan.ranges[i-(direction_coefficient*90)] for i in range(180)]
+            scan_filter=[scan.ranges[i-(direction_coefficient*(-1)*90)] for i in range(180)] #TODO SKIFT DETTE TIL RIGTIG RETNING
 
 
         for i in range(samples_view):
