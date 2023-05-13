@@ -162,7 +162,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     tunnel_front_threshold=0.18
     tunnel_angle=60
    
-    
+    #god
     twist.linear.x=0.22
     
     if zones_min_distance[1] < front_distance:
