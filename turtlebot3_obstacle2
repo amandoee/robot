@@ -74,7 +74,7 @@ def collideCheckV2(scanList):
     danger_list=[]
     zones_detection_angle = [0,0,0]
     zones_min_distance = [10,10,10]
-    zone_angle = 60
+    zone_angle = 40
 
     #Check if there is any danger value in array. If so, return index of the lowest distance.
     res = []
