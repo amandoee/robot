@@ -246,7 +246,8 @@ class Obstacle():
             samples_view = samples
 
         if samples_view == 1:
-            scan_filter=[scan.ranges[(i-(direction_coefficient*90))+10] for i in range(180)]
+            scan_filter=[scan.ranges[(i-(direction_coefficient*90))] for i in range(180+10)]
+            scan_filter = scan_filter[10:180+10]
 
 
         for i in range(samples_view):
