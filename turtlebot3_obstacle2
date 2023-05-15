@@ -78,7 +78,7 @@ def victimCheck(R,G,B):
         if (G*Threshold_factor_Red<=R and B*Threshold_factor_Red<=R):
             victim_counter+=1
 
-        victim_delay=16
+        victim_delay=18
 
     else:
         victim_delay-=1
