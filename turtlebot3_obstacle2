@@ -39,6 +39,9 @@ ROBOT_WIDTH=0.30
 
 direction_coefficient=1
 stuckCount=0
+victim_delay=0
+victim_counter=0
+
 
 
 # Get I2C bus
@@ -50,7 +53,7 @@ bus = smbus.SMBus(1)
 bus.write_byte_data(0x44, 0x01, 0x05)
 
 
-#RGB reading function
+#RGB reading function<
 def getAndUpdateColour():
 	# Read the data from the sensor
         data = bus.read_i2c_block_data(0x44,0x09,6)
@@ -62,6 +65,22 @@ def getAndUpdateColour():
         # Output data to the console RGB values
         # Uncomment the line below when you have read the red, green and blue values
         print("RGB(%d %d %d)" % (red, green, blue))
+        victimCheck(red,green,blue)
+
+def victimCheck(R,G,B, count):
+    #Threshold for a relative spike in Red:
+    Threshold_factor_Red=1.4
+    global victim_delay
+    global victim_counter
+
+    if (victim_delay==0):
+        if (G*Threshold_factor_Red<=R and B*Threshold_factor_Red<=R):
+            victim_counter+=1
+
+        victim_delay=30
+
+    else:
+        victim_delay-=1
 
 
 def callback(data):
