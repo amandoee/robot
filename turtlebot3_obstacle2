@@ -67,7 +67,7 @@ def getAndUpdateColour():
         print("RGB(%d %d %d)" % (red, green, blue))
         victimCheck(red,green,blue)
 
-def victimCheck(R,G,B, count):
+def victimCheck(R,G,B):
     #Threshold for a relative spike in Red:
     Threshold_factor_Red=1.4
     global victim_delay
