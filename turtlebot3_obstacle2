@@ -66,6 +66,7 @@ def getAndUpdateColour():
         # Uncomment the line below when you have read the red, green and blue values
         print("RGB(%d %d %d)" % (red, green, blue))
         victimCheck(red,green,blue)
+        print("The amount of victims found: %d", victim_counter)
 
 def victimCheck(R,G,B):
     #Threshold for a relative spike in Red:
