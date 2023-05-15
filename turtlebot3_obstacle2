@@ -236,9 +236,9 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
         twist.angular.z*=direction_turn_scalar
 
-    rospy.loginfo(turn)
+    #rospy.loginfo(turn)
 
-    #robot._cmd_pub.publish(twist)
+    robot._cmd_pub.publish(twist)
     
     
     	
@@ -305,7 +305,7 @@ class Obstacle():
                 twist.linear.x = LINEAR_VEL*direction_coefficient
                 twist.angular.z = 0.0
                 stuckCount=0
-                #self._cmd_pub.publish(twist)
+                self._cmd_pub.publish(twist)
                 #rospy.loginfo('Distance of the obstacle : %f', min_distance)
 
 def main():
