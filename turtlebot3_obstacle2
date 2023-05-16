@@ -83,7 +83,7 @@ def victimCheck(red,green, blue):
         if (green*Threshold_factor_Red<=red and blue*Threshold_factor_Red<=red):
             if colorCriteria:
                 victim_counter+=1
-            victim_delay=18
+                victim_delay=18
             colorCriteria=True
         return True
 
