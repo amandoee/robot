@@ -67,6 +67,7 @@ def getAndUpdateColour():
         #print("RGB(%d %d %d)" % (red, green, blue))
         #if (victimCheck(red,green,blue)):
         victimCheck(red,green,blue)
+        rospy.loginfo("R: %d, G: %d, B: %d" % (red,green,blue))
         rospy.loginfo("The amount of victims found: %d" % (victim_counter))
 
 def victimCheck(R,G,B):
