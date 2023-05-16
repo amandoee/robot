@@ -42,7 +42,7 @@ stuckCount=0
 victim_delay=0
 victim_counter=0
 
-
+colorCriteria=False
 
 # Get I2C bus
 bus = smbus.SMBus(1)
@@ -75,17 +75,21 @@ def victimCheck(red,green, blue):
     Threshold_factor_Red=1
     global victim_delay
     global victim_counter
+    global colorCriteria
 
     rospy.loginfo(victim_delay)
 
     if (victim_delay<=0):
         if (green*Threshold_factor_Red<=red and blue*Threshold_factor_Red<=red):
-            victim_counter+=1
+            if colorCriteria:
+                victim_counter+=1
             victim_delay=18
+            colorCriteria=True
         return True
 
     else:
         victim_delay-=1
+        colorCriteria=False
         return False
 
 
