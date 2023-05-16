@@ -72,7 +72,7 @@ def getAndUpdateColour():
 
 def victimCheck(R,G,B):
     #Threshold for a relative spike in Red:
-    Threshold_factor_Red=1.4
+    Threshold_factor_Red=1.05
     global victim_delay
     global victim_counter
 
@@ -240,7 +240,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
     #rospy.loginfo(turn)
 
-    #robot._cmd_pub.publish(twist)
+    robot._cmd_pub.publish(twist)
     
     
     	
