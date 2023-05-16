@@ -171,7 +171,9 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     distance_to_right_wall = zones_min_distance[2]*math.cos(((90-abs(zones_angle[2]))/180)*3.14)
     distance_to_left_wall = zones_min_distance[0]*math.cos(((90-abs(zones_angle[0]))/180)*3.14)
     distance_to_closest_wall = danger_list[turn]*math.cos((angle_to_wall/180)*3.14) if angle_to_wall < cone_angle else danger_list[turn]
-    
+    distance_to_inner_wall=0.17
+
+
     front_distance = 0.5
     front_collision_turn_speed = 1.1
     front_change_direction_distance=0.16
@@ -224,7 +226,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
         
       
     
-    elif distance_to_closest_wall<quick_turn_distance and angle_to_wall<min_turn_angle and zones_min_distance[1]<front_clear_distance and (distance_to_right_wall > adjesent_wall_distance or distance_to_left_wall > adjesent_wall_distance)  :
+    elif distance_to_closest_wall<quick_turn_distance and angle_to_wall<min_turn_angle and (zones_min_distance[1]<front_clear_distance or distance_to_closest_wall<distance_to_inner_wall) and (distance_to_right_wall > adjesent_wall_distance or distance_to_left_wall > adjesent_wall_distance)  :
 
         if turn <= 90:
             twist.angular.z= scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
