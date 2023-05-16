@@ -70,14 +70,16 @@ def getAndUpdateColour():
         rospy.loginfo("R: %d, G: %d, B: %d" % (red,green,blue))
         rospy.loginfo("The amount of victims found: %d" % (victim_counter))
 
-def victimCheck(R,G,B):
+def victimCheck(red,green, blue):
     #Threshold for a relative spike in Red:
     Threshold_factor_Red=0.92
     global victim_delay
     global victim_counter
 
+    rospy.loginfo(victim_delay)
+
     if (victim_delay<=0):
-        if (G*Threshold_factor_Red<=R and B*Threshold_factor_Red<=R):
+        if (green*Threshold_factor_Red<=red and blue*Threshold_factor_Red<=red):
             victim_counter+=1
 
         victim_delay=10
