@@ -223,8 +223,10 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
             twist.angular.z = max_turn_speed
             robot._cmd_pub.publish(twist)
             rospy.sleep(0.25)
+        else:
+            stuckCount=10
+        
         #rospy.loginfo("Change direction")
-        stuckCount=10
         direction_coefficient*=-1
         twist.angular.z=0
         #rospy.loginfo("Changing direction")
