@@ -231,9 +231,9 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
         #For saving itself in wierd/tight turns
         if (distance_to_closest_wall<distance_to_inner_wall):
             if turn <= 90:
-                twist.angular.z=1.1
+                twist.angular.z=0.5
             else:
-                twist.angular.z=-1.1
+                twist.angular.z=0.5
 
         #Normal and original case
         else:
