@@ -72,7 +72,7 @@ def getAndUpdateColour():
 
 def victimCheck(R,G,B):
     #Threshold for a relative spike in Red:
-    Threshold_factor_Red=1.0
+    Threshold_factor_Red=0.95
     global victim_delay
     global victim_counter
 
