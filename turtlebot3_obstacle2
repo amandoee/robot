@@ -213,11 +213,18 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     #rospy.loginfo([zones_angle[0],zones_angle[2],zones_min_distance[0],zones_min_distance[2]])
     #rospy.loginfo(distance_to_right_wall)
     #rospy.loginfo(zones_angle)
-    temp=[]  
+    temp=[]
+    if stuckCount < 0:
+        stuckCount -= 1  
 
-    if (distance_to_right_wall < chance_direction_distance and zones_angle[0]<tunnel_angle and zones_angle[2]<tunnel_angle and zones_min_distance[1] < tunnel_front_threshold and distance_to_left_wall < chance_direction_distance) or (zones_min_distance[1]<front_change_direction_distance):# or stuckCount>9:
+    if (distance_to_right_wall < chance_direction_distance and zones_angle[0]<tunnel_angle and zones_angle[2]<tunnel_angle and zones_min_distance[1] < tunnel_front_threshold and distance_to_left_wall < chance_direction_distance) or (zones_min_distance[1]<front_change_direction_distance):
+        if stuckCount > 0:
+            twist.linear.x = 0
+            twist.angular.z = max_turn_speed
+            robot._cmd_pub.publish(twist)
+            rospy.sleep(0.1)
         #rospy.loginfo("Change direction")
-        stuckCount=0
+        stuckCount=10
         direction_coefficient*=-1
         twist.angular.z=0
         #rospy.loginfo("Changing direction")
