@@ -224,7 +224,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
         #robot._cmd_pub.publish(twist)
         #rospy.sleep(0.1)
         
-      
+      #a
     
     elif distance_to_closest_wall<quick_turn_distance and angle_to_wall<min_turn_angle and (zones_min_distance[1]<front_clear_distance) and (distance_to_right_wall > adjesent_wall_distance or distance_to_left_wall > adjesent_wall_distance)  :
 
