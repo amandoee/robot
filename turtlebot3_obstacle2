@@ -76,7 +76,7 @@ def victimCheck(R,G,B):
     global victim_delay
     global victim_counter
 
-    if (victim_delay==0):
+    if (victim_delay<=0):
         if (G*Threshold_factor_Red<=R and B*Threshold_factor_Red<=R):
             victim_counter+=1
 
