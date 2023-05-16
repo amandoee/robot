@@ -226,21 +226,14 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
         
       
     
-    elif distance_to_closest_wall<quick_turn_distance and angle_to_wall<min_turn_angle and (zones_min_distance[1]<front_clear_distance or distance_to_closest_wall<distance_to_inner_wall) and (distance_to_right_wall > adjesent_wall_distance or distance_to_left_wall > adjesent_wall_distance)  :
+    elif distance_to_closest_wall<quick_turn_distance and angle_to_wall<min_turn_angle and (zones_min_distance[1]<front_clear_distance) and (distance_to_right_wall > adjesent_wall_distance or distance_to_left_wall > adjesent_wall_distance)  :
 
-        #For saving itself in wierd/tight turns
-        if (distance_to_closest_wall<distance_to_inner_wall):
-            if turn <= 90:
-                twist.angular.z=0.5
-            else:
-                twist.angular.z=0.5
 
         #Normal and original case
+        if turn <= 90:
+            twist.angular.z= scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
         else:
-            if turn <= 90:
-                twist.angular.z= scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
-            else:
-                twist.angular.z=-scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
+            twist.angular.z=-scaling_func(quick_turn_distance, min_turn_speed, max_turn_speed_distance, max_turn_speed, distance_to_closest_wall)
 
         twist.linear.x= scaling_func(quick_turn_distance, max_speed, max_turn_speed_distance, min_speed, distance_to_closest_wall)
     
