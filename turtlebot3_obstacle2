@@ -34,6 +34,8 @@ STOP_DISTANCE = 0.3
 LIDAR_ERROR = 0.05
 SAFE_STOP_DISTANCE = STOP_DISTANCE + LIDAR_ERROR
 
+LINEAR_VEL_SUM = 0.0
+CYCLES_PASSED = 0.0
 
 ROBOT_WIDTH=0.30
 
@@ -92,11 +94,31 @@ def victimCheck(red,green, blue):
         colorCriteria=False
         return False
 
+def linearAverageVelocity(linear_vel):
+    global LINEAR_VEL_SUM
+    global CYCLES_PASSED
+    
+    LINEAR_VEL_SUM += abs(linear_vel)
+    CYCLES_PASSED += 1.0
+    linear_vel_average = LINEAR_VEL_SUM/CYCLES_PASSED
+    
+    return linear_vel_average
+
 
 def callback(data):
     #Print current velocity
     rospy.loginfo(data.twist.twist.linear.x)
     rospy.loginfo(data.twist.twist.angular.z)
+
+def noiseReduction(scanList):
+    #Noise reduction
+    res = []
+    for nr, i in enumerate(scanList):
+        if i > 0:
+            res.append(i)
+            if (scanList[(nr-2)%180] == 0 and scanList[(nr+2)%180]==0) or (scanList[(nr-1)%180] == 0 and scanList[(nr+1)%180]==0) :
+                scanList[nr]=0
+    return scanList, res
 
 
 def collideCheckV2(scanList):
@@ -109,14 +131,10 @@ def collideCheckV2(scanList):
 
     zone_angle = 60
 
-    #Check if there is any danger value in array. If so, return index of the lowest distance.
-    res = []
-    for nr, i in enumerate(scanList):
-        if i > 0:
-            res.append(i)
-
-            if (scanList[(nr-2)%180] == 0 and scanList[(nr+2)%180]==0) or (scanList[(nr-1)%180] == 0 and scanList[(nr+1)%180]==0) :
-                scanList[nr]=0
+    #Noise reduction of scanList
+    scanList, res = noiseReduction(scanList)
+    
+    #Check if there are enough values in the scanList to eliminate false positives
     if len(res) < 4:
         return False, 90, zones_detection_angle, zones_min_distance , danger_list
     
@@ -143,9 +161,6 @@ def collideCheckV2(scanList):
             danger_list.append(0)
     
     
-
-
-
     if any(i > 0 for i in danger_list) and len(res)>6:
         return True, danger_list.index(min(i for i in danger_list if i > 0)), zones_detection_angle, zones_min_distance , danger_list
         #return True, danger_list.index(min(i for i in danger_list if i > 0)), danger_list
@@ -250,6 +265,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
     #rospy.loginfo(turn)
 
+    linearAverageVelocity(twist.linear.x)
     robot._cmd_pub.publish(twist)
     
     
@@ -265,29 +281,13 @@ class Obstacle():
         self.obstacle()
 
 
-    def get_scan(self):
+    def direction_aware_scan(self):
         scan = rospy.wait_for_message('scan', LaserScan)
         scan_filter = []
-       
-        samples = len(scan.ranges)  # The number of samples is defined in 
-                                    # turtlebot3_<model>.gazebo.xacro file,
-                                    # the default is 360.
-        samples_view = 1            # 1 <= samples_view <= samples
         
-        #print(samples)
-        if samples_view > samples:
-            samples_view = samples
-
-        if samples_view == 1:
-            scan_filter=[scan.ranges[(i-(direction_coefficient*90))] for i in range(180)]
-            
-
-
-        for i in range(samples_view):
-            if scan_filter[i] == float('Inf'):
-                scan_filter[i] = 3.5
-            elif math.isnan(scan_filter[i]):
-                scan_filter[i] = 0
+        #Create a 180 degree list of the laser scan data. 
+        #Direction coefficient is used to set offset of the list if the robot is moving backwards.
+        scan_filter=[scan.ranges[(i-(direction_coefficient*90))] for i in range(180)]
         
         return scan_filter
 
@@ -299,7 +299,7 @@ class Obstacle():
         while not rospy.is_shutdown():
 
 
-            lidar_distances = self.get_scan()
+            lidar_distances = self.direction_aware_scan()
             collideBool, collide_index, zones_angle, zones_min_distance, danger_list = collideCheckV2(lidar_distances)
 
             #rospy.loginfo(zones_count)
@@ -317,6 +317,10 @@ class Obstacle():
                 twist.linear.x = LINEAR_VEL*direction_coefficient
                 twist.angular.z = 0.0
                 stuckCount=0
+                
+                #add to average velocity
+                linearAverageVelocity(twist.linear.x)
+                
                 self._cmd_pub.publish(twist)
                 #rospy.loginfo('Distance of the obstacle : %f', min_distance)
 
