@@ -44,6 +44,9 @@ stuckCount=0
 victim_delay=0
 victim_counter=0
 
+collision_counter=0
+collision_counter_cooldown=0
+
 changeDirectionCooldown=0
 
 colorCriteria=False
@@ -287,6 +290,24 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     #Calibration
     rospy.loginfo(zones_min_distance)
     
+
+def collisionDetection(dangers):
+    global collision_counter
+    global collision_counter_cooldown
+    
+    collision_counter_cooldown-=1
+    
+    if (collision_counter_cooldown<=0):
+        for nr, i in enumerate(dangers):
+            angle=nr-90
+            trig_angle=abs(angle)
+            
+            if (math.cos((trig_angle/180)*3.14))<0.09 and trig_angle<45:
+                #rospy.loginfo("Collision detected")
+                collision_counter+=1
+                collision_counter_cooldown=10
+    
+    
     
 
 
@@ -322,6 +343,7 @@ class Obstacle():
             lidar_distances = self.direction_aware_scan()
             collideBool, collide_index, zones_angle, zones_min_distance, danger_list = collideCheckV2(lidar_distances)
             #getAndUpdateColour()
+            collisionDetection(danger_list)
 
             #rospy.loginfo(zones_count)
             #rospy.loginfo(zones_min_distance)
