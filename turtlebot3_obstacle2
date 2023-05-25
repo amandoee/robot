@@ -256,7 +256,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     ##Override turn to go straight if the front is clear and side walls are close
     if (distance_to_left_wall < adjesent_wall_distance and distance_to_right_wall < adjesent_wall_distance and zones_min_distance[1] > front_clear_distance):
         twist.angular.z=0
-        twist.linear.x=max_speed
+        twist.linear.x=max_speed*direction_coefficient
 
     #rospy.loginfo(twist.linear.x)
     #rospy.loginfo(twist.angular.z)
