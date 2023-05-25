@@ -266,7 +266,10 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     #rospy.loginfo(turn)
 
     linearAverageVelocity(twist.linear.x)
-    robot._cmd_pub.publish(twist)
+    
+    #robot._cmd_pub.publish(twist)
+    #TILBAGE HER
+    rospy.loginfo(zones_angle[1])
     
     
 
@@ -279,14 +282,7 @@ class Obstacle():
 
         self._cmd_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
         #self.obstacle()
-        self.direction_aware_scan()
-
-    def lidarCalibration(self):
-        while not rospy.is_shutdown():
-            lidar_distances = self.direction_aware_scan()
-            collideBool, collide_index, zones_angle, zones_min_distance, danger_list = collideCheckV2(lidar_distances)
-            
-            rospy.loginfo(zones_angle[1])
+        self.obstacle()
 
 
     def direction_aware_scan(self):
@@ -329,8 +325,9 @@ class Obstacle():
                 #add to average velocity
                 linearAverageVelocity(twist.linear.x)
                 
-                self._cmd_pub.publish(twist)
-                #rospy.loginfo('Distance of the obstacle : %f', min_distance)
+                #TILBAGE HER
+                #self._cmd_pub.publish(twist)
+                rospy.loginfo('Distance of the obstacle : %f', zones_angle[1])
 
 def main():
     rospy.init_node('turtlebot3_obstacle')
