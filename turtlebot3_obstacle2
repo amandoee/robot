@@ -198,7 +198,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     min_turn_speed = 1.1
     min_turn_angle=90
     front_clear_distance = 0.3
-    adjesent_wall_distance = 0
+    adjesent_wall_distance = 0.2
 
     max_speed = 0.22
     min_speed = 0.05
@@ -252,6 +252,11 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
         twist.linear.x= scaling_func(quick_turn_distance, max_speed, max_turn_speed_distance, min_speed, distance_to_closest_wall)
     
+
+    ##Override turn to go straight if the front is clear and side walls are close
+    if (distance_to_left_wall < adjesent_wall_distance and distance_to_right_wall < adjesent_wall_distance and zones_min_distance[1] > front_clear_distance):
+        twist.angular.z=0
+        twist.linear.x=max_speed
 
     #rospy.loginfo(twist.linear.x)
     #rospy.loginfo(twist.angular.z)
