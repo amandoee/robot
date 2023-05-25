@@ -44,6 +44,8 @@ stuckCount=0
 victim_delay=0
 victim_counter=0
 
+changeDirectionCooldown=0
+
 colorCriteria=False
 
 # Get I2C bus
@@ -175,6 +177,10 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     #Read from which side the obstacle is. Implemented later
     global direction_coefficient
     global stuckCount
+    global changeDirectionCooldown
+    
+    changeDirectionCooldown-=1
+    
     scaling_func = lambda in_start, out_start, in_end, out_end, input_value : (((out_end-out_start)/(in_end-in_start))*(input_value-in_start)) + out_start
     
     direction_turn_scalar=1.2
@@ -235,6 +241,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
         stuckCount=0
         direction_coefficient*=-1
         twist.angular.z=0
+        changeDirectionCooldown=10
         #rospy.loginfo("Changing direction")
         #robot._cmd_pub.publish(twist)
         #rospy.sleep(0.1)
@@ -254,9 +261,10 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     
 
     ##Override turn to go straight if the front is clear and side walls are close
-    if (distance_to_left_wall < adjesent_wall_distance and distance_to_right_wall < adjesent_wall_distance and zones_min_distance[1] > front_clear_distance):
+    if (distance_to_left_wall < adjesent_wall_distance and distance_to_right_wall < adjesent_wall_distance and zones_min_distance[1] > front_clear_distance) and changeDirectionCooldown<=0:
         twist.angular.z=0
         twist.linear.x=max_speed
+        
 
     #rospy.loginfo(twist.linear.x)
     #rospy.loginfo(twist.angular.z)
