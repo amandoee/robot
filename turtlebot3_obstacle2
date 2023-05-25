@@ -213,7 +213,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     chance_direction_distance = 0.2
     
     tunnel_front_threshold=0.2
-    tunnel_angle=60
+    tunnel_angle=45
    
     #god
     twist.linear.x=0.22
@@ -261,7 +261,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
     ##Override turn to go straight if the front is clear and side walls are close
     
-    if (distance_to_left_wall < adjesent_wall_distance and distance_to_right_wall < adjesent_wall_distance and zones_min_distance[1] > front_clear_distance) and changeDirectionCooldown<=0:
+    if (distance_to_left_wall < adjesent_wall_distance and distance_to_right_wall < adjesent_wall_distance and zones_min_distance[1] > front_clear_distance and abs(zones_angle[0])>tunnel_angle and abs(zones_angle[2])>tunnel_angle) and changeDirectionCooldown<=0:
         twist.angular.z=0
         twist.linear.x=max_speed
         
