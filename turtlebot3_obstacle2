@@ -239,7 +239,10 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     if ((distance_to_right_wall < chance_direction_distance and zones_min_distance[1] < tunnel_front_threshold and distance_to_left_wall < chance_direction_distance) or (zones_min_distance[1]<front_change_direction_distance)) and changeDirectionCooldown<=0:# or stuckCount>9:
         #rospy.loginfo("Change direction")
         stuckCount=0
-        direction_coefficient*=-1
+        
+        #direction_coefficient*=-1
+        #Calibration
+        
         twist.angular.z=0
         changeDirectionCooldown=10
         #rospy.loginfo("Changing direction")
@@ -280,9 +283,9 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
     linearAverageVelocity(twist.linear.x)
     
-    robot._cmd_pub.publish(twist)
+    #robot._cmd_pub.publish(twist)
     #Calibration
-    #rospy.loginfo(zones_angle[1])
+    rospy.loginfo(zones_min_distance)
     
     
 
@@ -339,8 +342,8 @@ class Obstacle():
                 linearAverageVelocity(twist.linear.x)
                 
                 #Calibration
-                self._cmd_pub.publish(twist)
-                #rospy.loginfo('Distance of the obstacle : %f', zones_angle[1])
+                #self._cmd_pub.publish(twist)
+                rospy.loginfo('Distance of the obstacle : %f', danger_list[collide_index])
 
 def main():
     rospy.init_node('turtlebot3_obstacle')
