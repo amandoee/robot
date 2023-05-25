@@ -204,7 +204,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     min_turn_speed = 1.1
     min_turn_angle=90
     front_clear_distance = 0.3
-    adjesent_wall_distance = 0.25
+    adjesent_wall_distance = 0.2
 
     max_speed = 0.22
     min_speed = 0.05
