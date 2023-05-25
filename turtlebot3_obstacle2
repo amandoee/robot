@@ -267,9 +267,9 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
     linearAverageVelocity(twist.linear.x)
     
-    #robot._cmd_pub.publish(twist)
-    #TILBAGE HER
-    rospy.loginfo(zones_angle[1])
+    robot._cmd_pub.publish(twist)
+    #Calibration
+    #rospy.loginfo(zones_angle[1])
     
     
 
@@ -325,9 +325,9 @@ class Obstacle():
                 #add to average velocity
                 linearAverageVelocity(twist.linear.x)
                 
-                #TILBAGE HER
-                #self._cmd_pub.publish(twist)
-                rospy.loginfo('Distance of the obstacle : %f', zones_angle[1])
+                #Calibration
+                self._cmd_pub.publish(twist)
+                #rospy.loginfo('Distance of the obstacle : %f', zones_angle[1])
 
 def main():
     rospy.init_node('turtlebot3_obstacle')
