@@ -307,11 +307,6 @@ def collisionDetection(dangers):
                 collision_counter+=1
                 collision_counter_cooldown=10
                 rospy.loginfo(collision_counter)
-    
-    
-    
-
-
 
 
 class Obstacle():
