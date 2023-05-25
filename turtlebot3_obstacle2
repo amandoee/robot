@@ -342,12 +342,12 @@ class Obstacle():
             lidar_distances = self.direction_aware_scan()
             collideBool, collide_index, zones_angle, zones_min_distance, danger_list = collideCheckV2(lidar_distances)
             #getAndUpdateColour()
-            collisionDetection(danger_list)
 
             #rospy.loginfo(zones_count)
             #rospy.loginfo(zones_min_distance)
             if collideBool:
 
+                collisionDetection(danger_list)
                     
                 optimizedTurn(self, collide_index, zones_angle, zones_min_distance, danger_list)
                 
