@@ -269,8 +269,14 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     robot._cmd_pub.publish(twist)
     
     
-    	
 
+def lidarCalibration(robot):
+    
+    while not rospy.is_shutdown():
+        lidar_distances = robot.direction_aware_scan()
+        collideBool, collide_index, zones_angle, zones_min_distance, danger_list = collideCheckV2(lidar_distances)
+        
+        rospy.loginfo(zones_angle[1])
 
 
 class Obstacle():
@@ -329,7 +335,8 @@ def main():
     #rospy.Subscriber('/odom',Odometry,callback)
 
     try:
-        obstacle = Obstacle()
+        #obstacle = Obstacle()
+        calibration= lidarCalibration()
     except rospy.ROSInterruptException:
         pass
 
