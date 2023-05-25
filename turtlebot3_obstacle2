@@ -301,6 +301,7 @@ def collisionDetection(dangers):
         for nr, i in enumerate(dangers):
             angle=nr-90
             trig_angle=abs(angle)
+            rospy.loginfo(math.cos((trig_angle/180)*3.14))
             
             if (math.cos((trig_angle/180)*3.14))<0.09 and trig_angle<45:
                 #rospy.loginfo("Collision detected")
