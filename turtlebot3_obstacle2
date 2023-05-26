@@ -146,7 +146,7 @@ def collideCheckV2(scanList):
     #Update collision_distances
     for index, i in enumerate(scanList):
         if i!=0 and i<collision_distances[index-(direction_coefficient*90)]:
-            collision_distances[index]=i
+            collision_distances[index-(direction_coefficient*90)]=i
             rospy.loginfo(collision_distances)
     
     
