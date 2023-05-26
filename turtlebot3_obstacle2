@@ -46,7 +46,7 @@ victim_counter=0
 
 collision_counter=0
 collision_counter_cooldown=0
-collision_distances=[0 for i in range(0,360)]
+collision_distances=[10 for i in range(0,360)]
 
 changeDirectionCooldown=0
 
@@ -135,13 +135,6 @@ def collideCheckV2(scanList):
     zones_detection_angle = [0,0,0]
     zones_min_distance = [10,10,10]
 
-    for index, i in enumerate(scanList):
-        #check 0-180 if direction coefficient is 1
-        #[scan.ranges[(i-(direction_coefficient*90))] for i in range(180)]
-        if i!=0 and i<collision_distances[index-(direction_coefficient*90)]:
-            collision_distances[index]=i
-            rospy.loginfo(collision_distances)
-
 
     direction_scanscalar= 10 if direction_coefficient==1 else 0.00 #TODO
 
@@ -149,6 +142,13 @@ def collideCheckV2(scanList):
 
     #Noise reduction of scanList
     scanList, res = noiseReduction(scanList)
+    
+    #Update collision_distances
+    for index, i in enumerate(scanList):
+        if i!=0 and i<collision_distances[index-(direction_coefficient*90)]:
+            collision_distances[index]=i
+            rospy.loginfo(collision_distances)
+    
     
     #Check if there are enough values in the scanList to eliminate false positives
     if len(res) < 4:
@@ -299,7 +299,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     
     #robot._cmd_pub.publish(twist)
     #Calibration
-    rospy.loginfo(zones_min_distance)
+    #rospy.loginfo(zones_min_distance)
     
 
 def collisionDetection(dangers):
@@ -320,9 +320,9 @@ def collisionDetection(dangers):
                 #collision_counter_cooldown=10
                 #rospy.loginfo(collision_counter)
                 collision_counter_cooldown=10
-                rospy.loginfo(i)
-                rospy.loginfo(math.cos((trig_angle/180)*3.14)*i)
-                rospy.loginfo("wallah du styrter")
+                #rospy.loginfo(i)
+                #rospy.loginfo(math.cos((trig_angle/180)*3.14)*i)
+                #rospy.loginfo("wallah du styrter")
                 break
 
 
@@ -378,7 +378,7 @@ class Obstacle():
                 
                 #Calibration
                 #self._cmd_pub.publish(twist)
-                rospy.loginfo('Distance of the obstacle : %f', danger_list[collide_index])
+                #rospy.loginfo('Distance of the obstacle : %f', danger_list[collide_index])
 
 def main():
     rospy.init_node('turtlebot3_obstacle')
