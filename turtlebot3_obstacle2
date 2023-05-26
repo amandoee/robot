@@ -46,6 +46,7 @@ victim_counter=0
 
 collision_counter=0
 collision_counter_cooldown=0
+collision_distances=[0 for i in range(0,360)]
 
 changeDirectionCooldown=0
 
@@ -128,9 +129,19 @@ def noiseReduction(scanList):
 
 def collideCheckV2(scanList):
 
+    global collision_distances
+
     danger_list=[]
     zones_detection_angle = [0,0,0]
     zones_min_distance = [10,10,10]
+
+    for index, i in enumerate(scanList):
+        #check 0-180 if direction coefficient is 1
+        #[scan.ranges[(i-(direction_coefficient*90))] for i in range(180)]
+        if i!=0 and i<collision_distances[index-(direction_coefficient*90)]:
+            collision_distances[index]=i
+            rospy.loginfo(collision_distances)
+
 
     direction_scanscalar= 10 if direction_coefficient==1 else 0.00 #TODO
 
