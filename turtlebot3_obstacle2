@@ -257,13 +257,12 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
         #rospy.loginfo("Change direction")
         stuckCount=0
         
-        #direction_coefficient*=-1
+        direction_coefficient*=-1
         #Calibration
         
         twist.angular.z=0
         changeDirectionCooldown=10
         #rospy.loginfo("Changing direction")
-        #robot._cmd_pub.publish(twist)
         #rospy.sleep(0.1)
         
       
@@ -300,7 +299,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
     linearAverageVelocity(twist.linear.x)
     
-    #robot._cmd_pub.publish(twist)
+    robot._cmd_pub.publish(twist)
     #Calibration
     #rospy.loginfo(zones_min_distance)
     
@@ -380,7 +379,7 @@ class Obstacle():
                 linearAverageVelocity(twist.linear.x)
                 
                 #Calibration
-                #self._cmd_pub.publish(twist)
+                self._cmd_pub.publish(twist)
                 #rospy.loginfo('Distance of the obstacle : %f', danger_list[collide_index])
 
 def main():
