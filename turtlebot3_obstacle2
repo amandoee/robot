@@ -337,7 +337,7 @@ class Obstacle():
         
         start_time = time.time()
 
-        while not rospy.is_shutdown() and True:
+        while not rospy.is_shutdown() and start_time+10>time.time():
 
             lidar_distances = self.direction_aware_scan()
             collideBool, collide_index, zones_angle, zones_min_distance, danger_list = collideCheckV2(lidar_distances)
@@ -363,6 +363,11 @@ class Obstacle():
                 #Calibration
                 self._cmd_pub.publish(twist)
                 #rospy.loginfo('Distance of the obstacle : %f', danger_list[collide_index])
+        
+        #Log info when done
+        rospy.loginfo("amount of victims found: %f", victim_counter)
+        rospy.loginfo("Amount of collisions detected: %f", collision_counter)
+        
         
         
 
