@@ -297,7 +297,7 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
         twist.angular.z*=direction_turn_scalar
 
-    rospy.loginfo(turn)
+    #rospy.loginfo(turn)
 
     linearAverageVelocity(twist.linear.x)
     
