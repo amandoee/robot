@@ -363,6 +363,12 @@ class Obstacle():
                 #Calibration
                 self._cmd_pub.publish(twist)
                 #rospy.loginfo('Distance of the obstacle : %f', danger_list[collide_index])
+        
+        #When done or shutdown, stop the robot
+        rospy.loginfo('Turn off!')
+        twist.angular.z=0
+        twist.linear.x=0
+        self._cmd_pub.publish(twist)
 
 def main():
     rospy.init_node('turtlebot3_obstacle')
