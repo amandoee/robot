@@ -262,7 +262,8 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
         #rospy.loginfo("Change direction")
         stuckCount=0
         
-        direction_coefficient*=-1
+        #HER
+        #direction_coefficient*=-1
         #Calibration
         
         twist.angular.z=0
@@ -300,11 +301,13 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
         twist.angular.z*=direction_turn_scalar
 
-    #rospy.loginfo(turn)
+    rospy.loginfo(turn)
 
     linearAverageVelocity(twist.linear.x)
     
-    robot._cmd_pub.publish(twist)
+    #HER
+    #robot._cmd_pub.publish(twist)
+    
     #Calibration
     #rospy.loginfo(zones_min_distance)
     
