@@ -40,7 +40,6 @@ CYCLES_PASSED = 0.0
 ROBOT_WIDTH=0.30
 
 direction_coefficient=1
-stuckCount=0
 victim_delay=0
 victim_counter=0
 
@@ -76,8 +75,8 @@ def getAndUpdateColour():
         #print("RGB(%d %d %d)" % (red, green, blue))
         #if (victimCheck(red,green,blue)):
         victimCheck(red,green,blue)
-        rospy.loginfo("R: %d, G: %d, B: %d" % (red,green,blue))
-        rospy.loginfo("The amount of victims found: %d" % (victim_counter))
+        #rospy.loginfo("R: %d, G: %d, B: %d" % (red,green,blue))
+        #rospy.loginfo("The amount of victims found: %d" % (victim_counter))
 
 def victimCheck(red,green, blue):
     #Threshold for a relative spike in Red:
@@ -92,6 +91,7 @@ def victimCheck(red,green, blue):
         if (green*Threshold_factor_Red<=red and blue*Threshold_factor_Red<=red):
             if colorCriteria:
                 victim_counter+=1
+                rospy.loginfo("Victim found!")
                 victim_delay=18
             colorCriteria=True
         return True
@@ -198,7 +198,6 @@ def collideCheckV2(scanList):
 def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     #Read from which side the obstacle is. Implemented later
     global direction_coefficient
-    global stuckCount
     global changeDirectionCooldown
     
     changeDirectionCooldown-=1
@@ -214,7 +213,6 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     distance_to_right_wall = zones_min_distance[2]*math.cos(((90-abs(zones_angle[2]))/180)*3.14)
     distance_to_left_wall = zones_min_distance[0]*math.cos(((90-abs(zones_angle[0]))/180)*3.14)
     distance_to_closest_wall = danger_list[turn]*math.cos((angle_to_wall/180)*3.14) if angle_to_wall < cone_angle else danger_list[turn]
-    distance_to_inner_wall=0.14
 
 
     front_distance = 0.5
@@ -258,12 +256,10 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
     #rospy.loginfo(zones_angle)
     temp=[]  
 
-    if ((distance_to_right_wall < chance_direction_distance and zones_min_distance[1] < tunnel_front_threshold and distance_to_left_wall < chance_direction_distance) or (zones_min_distance[1]<front_change_direction_distance)) and changeDirectionCooldown<=0:# or stuckCount>9:
+    if ((distance_to_right_wall < chance_direction_distance and zones_min_distance[1] < tunnel_front_threshold and distance_to_left_wall < chance_direction_distance) or (zones_min_distance[1]<front_change_direction_distance)) and changeDirectionCooldown<=0:
         #rospy.loginfo("Change direction")
-        stuckCount=0
         
-        #HER
-        #direction_coefficient*=-1
+        direction_coefficient*=-1
         #Calibration
         
         twist.angular.z=0
@@ -305,8 +301,8 @@ def optimizedTurn(robot, turn, zones_angle, zones_min_distance, danger_list):
 
     linearAverageVelocity(twist.linear.x)
     
-    #HER
-    #robot._cmd_pub.publish(twist)
+    
+    robot._cmd_pub.publish(twist)
     
     #Calibration
     #rospy.loginfo(zones_min_distance)
@@ -336,7 +332,6 @@ class Obstacle():
     def obstacle(self):
         twist = Twist()
         turtlebot_moving = True
-        global stuckCount
         
         start_time = time.time()
 
@@ -344,7 +339,7 @@ class Obstacle():
 
             lidar_distances = self.direction_aware_scan()
             collideBool, collide_index, zones_angle, zones_min_distance, danger_list = collideCheckV2(lidar_distances)
-            #getAndUpdateColour()
+            getAndUpdateColour()
 
             #rospy.loginfo(zones_count)
             #rospy.loginfo(zones_min_distance)
@@ -358,7 +353,6 @@ class Obstacle():
             else:
                 twist.linear.x = LINEAR_VEL*direction_coefficient
                 twist.angular.z = 0.0
-                stuckCount=0
                 
                 #add to average velocity
                 linearAverageVelocity(twist.linear.x)
