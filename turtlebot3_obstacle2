@@ -365,6 +365,8 @@ class Obstacle():
         rospy.loginfo("amount of victims found: %f", victim_counter)
         rospy.loginfo("Amount of collisions detected: %f", collision_counter)
         
+        rospy.loginfo("Average speed: %f", LINEAR_VEL_SUM/CYCLES_PASSED)
+        
         
         
 
